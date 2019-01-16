@@ -1,0 +1,25 @@
+{
+  "name": "swagger2markdown",
+  "version": "1.0.0",
+  "description": "swagger to markdown",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kaleocheng/swagger2markdown.git"
+  },
+  "author": "kaleo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kaleocheng/swagger2markdown/issues"
+  },
+  "homepage": "https://github.com/kaleocheng/swagger2markdown#readme",
+  "dependencies": {
+    "markdown-toc": "^1.2.0",
+    "mustache": "^3.0.1",
+    "swagger-parser": "^6.0.3",
+    "swagmock": "git+https://github.com/kaleocheng/swagmock.git#adjust-to-wcl"
+  }
+}

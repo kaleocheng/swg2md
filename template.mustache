@@ -1,0 +1,69 @@
+{{#.}}
+## {{{title}}}
+### Interface Description
+{{description}}
+
+### Sequence Diagram
+![{{seq}}](./images/{{seq}}.png)
+
+### Interface Detail Design
+#### Request Parameters
+##### Request headers and query
+|Name|In|Description|Required|Type|
+|-|-|-|-|-|
+{{#parameters}}
+|{{name}}|{{in}}|{{description}}|{{required}}|{{schema.type}}|
+{{/parameters}}
+{{^parameters}}
+|NA|NA|NA|NA|NA|
+{{/parameters}}
+
+##### Request body
+{{#requestbody}}
+|Name|Description|Type|
+|-|-|-|
+{{#.}}
+|{{name}}|{{description}}|{{type}}|
+{{/.}}
+{{^.}}
+|NA|NA|NA|
+{{/.}}
+
+{{/requestbody}}
+
+#### Response
+##### Response code
+|Status Code|Description|
+|-|-|
+{{#responses}}
+{{#.}}
+|{{code}}|{{description}}|
+{{/.}}
+{{/responses}}
+
+##### Response body
+{{#responses}}
+{{#.}}
+***{{code}}***
+{{#responsebody}}
+|Name|Description|Type|
+|-|-|-|
+{{#.}}
+|{{name}}|{{description}}|{{type}}|
+{{/.}}
+{{^.}}
+|NA|NA|NA|
+{{/.}}
+
+{{/responsebody}}
+
+{{#responseMock}}
+```json
+{{{.}}}
+```
+{{/responseMock}}
+
+{{/.}}
+{{/responses}}
+{{/.}}
+
