@@ -1,8 +1,13 @@
+#!/usr/bin/env node
+
 const SwaggerParser = require('swagger-parser')
 const Swagmock = require('swagmock')
 const Mustache = require('mustache')
 const fs = require('fs')
 const toc = require('markdown-toc')
+const path = require('path')
+const commander = require('commander')
+const pkg = require('./package.json')
 
 function getRequireBody(name, obj, result) {
     const nameset = new Set([])
@@ -20,7 +25,11 @@ function getRequireBody(name, obj, result) {
 
     if ('type' in obj) {
         if (!nameset.has(name) && name != '') {
-            result.push({ name: name, description: obj.description || name, type: obj.type })
+            result.push({
+                name: name,
+                description: obj.description || name,
+                type: obj.type
+            })
             nameset.add(name)
         }
         switch (obj.type) {
@@ -44,7 +53,9 @@ function getRequireBody(name, obj, result) {
 async function getItems(api) {
     const items = []
     const paths = Object.keys(api.paths)
-    let mockgen = Swagmock(api, { validated: true })
+    let mockgen = Swagmock(api, {
+        validated: true
+    })
     for (let p of paths) {
         const methods = Object.keys(api.paths[p])
         for (let m of methods) {
@@ -106,19 +117,34 @@ async function getItems(api) {
 }
 
 
+commander
+    .version(pkg.version)
+    .option('-t, --template <template>', 'The doc template')
+    .option('-s, --swagger <swagger>', 'The swagger file')
+    .option('-o, --output [output]', 'The output file')
+    .parse(process.argv)
+
+if (!commander.template || !commander.swagger) {
+    console.log('need both -t and -s')
+    process.exit(0)
+}
+
 function main() {
-    SwaggerParser.validate('swagger.yaml', async function (err, api) {
+    SwaggerParser.validate(commander.swagger, async function (err, api) {
         if (err) {
             console.error(err)
         } else {
             const items = await getItems(api)
-            const doc = fs.readFileSync('template.md', 'utf8')
-            const template = fs.readFileSync('template.mustache', 'utf8')
+            const doc = fs.readFileSync(commander.template, 'utf8')
+            const template = fs.readFileSync(path.join(__dirname, 'template.mustache'), 'utf8')
             const templateOutput = Mustache.render(template, items);
             const docOutput = doc.replace(/<!--function detailed design-->/g, templateOutput)
             const output = `${toc(docOutput).content}\n${docOutput}`
-            console.log(output)
-            //console.log(items)
+            if (commander.output) {
+                fs.writeFileSync(commander.output, output)
+            } else {
+                console.log(output)
+            }
         }
     })
 }
