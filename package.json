@@ -8,14 +8,14 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/kaleocheng/swagger2markdown.git"
+        "url": "git+https://github.com/kaleocheng/swg2md.git"
     },
     "author": "kaleo",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/kaleocheng/swagger2markdown/issues"
+        "url": "https://github.com/kaleocheng/swg2md/issues"
     },
-    "homepage": "https://github.com/kaleocheng/swagger2markdown#readme",
+    "homepage": "https://github.com/kaleocheng/swg2md#readme",
     "dependencies": {
         "commander": "^2.19.0",
         "markdown-toc": "^1.2.0",
