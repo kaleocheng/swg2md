@@ -1,5 +1,5 @@
 {
-    "name": "swagger2markdown",
+    "name": "swg2md",
     "version": "1.0.0",
     "description": "swagger to markdown",
     "main": "index.js",
