@@ -23,31 +23,35 @@ function getRequireBody(name, obj, result) {
         }
     }
 
-    if ('type' in obj) {
-        if (!nameset.has(name) && name != '') {
-            result.push({
-                name: name,
-                description: obj.description || name,
-                type: obj.type
-            })
-            nameset.add(name)
-        }
-        switch (obj.type) {
-            case 'object':
-                if ('properties' in obj) {
-                    for (let n of Object.keys(obj.properties)) {
-                        let newName = (name == '') ? n : `${name}.${n}`
-                        getRequireBody(newName, obj.properties[n], result)
-                    }
-                }
-                break
-            case 'array':
-                if ('items' in obj) {
-                    getRequireBody(`${name}[item]`, obj.items, result)
-                }
-                break
-        }
+    if (!('type' in obj)) {
+        obj.type = 'object'
     }
+
+    if (!nameset.has(name) && name != '') {
+        result.push({
+            name: name,
+            description: obj.description || name,
+            type: obj.format || obj.type
+        })
+        nameset.add(name)
+    }
+
+    switch (obj.type) {
+        case 'object':
+            if ('properties' in obj) {
+                for (let n of Object.keys(obj.properties)) {
+                    let newName = (name == '') ? n : `${name}.${n}`
+                    getRequireBody(newName, obj.properties[n], result)
+                }
+            }
+            break
+        case 'array':
+            if ('items' in obj) {
+                getRequireBody(`${name}[item]`, obj.items, result)
+            }
+            break
+    }
+
 }
 
 async function getItems(api) {
@@ -65,7 +69,7 @@ async function getItems(api) {
             item.seq = `${m}${p.replace(/\//g, '-')}`
             item.path = p
             item.method = m
-            item.descripe = apiItem.summary
+            item.description = apiItem.summary
             item.parameters = apiItem.parameters || []
             item.requestbody = apiItem.requestBody && apiItem.requestBody.content && apiItem.requestBody.content['application/json'] && apiItem.requestBody.content['application/json'].schema || []
             item.responses = []
@@ -120,26 +124,30 @@ async function getItems(api) {
 commander
     .version(pkg.version)
     .option('-t, --template <template>', 'The doc template')
+    .option('--without-toc', 'Without table of contents')
     .option('-s, --swagger <swagger>', 'The swagger file')
     .option('-o, --output [output]', 'The output file')
     .parse(process.argv)
 
-if (!commander.template || !commander.swagger) {
-    console.log('need both -t and -s')
+if (!commander.swagger) {
+    console.log('need both and -s')
     process.exit(0)
 }
 
 function main() {
-    SwaggerParser.validate(commander.swagger, async function (err, api) {
+    SwaggerParser.validate(commander.swagger, async function(err, api) {
         if (err) {
             console.error(err)
         } else {
             const items = await getItems(api)
-            const doc = fs.readFileSync(commander.template, 'utf8')
-            const template = fs.readFileSync(path.join(__dirname, 'template.mustache'), 'utf8')
+            const template = fs.readFileSync(commander.template || path.join(__dirname, 'template.mustache'), 'utf8')
             const templateOutput = Mustache.render(template, items);
-            const docOutput = doc.replace(/<!--function detailed design-->/g, templateOutput)
-            const output = `${toc(docOutput).content}\n${docOutput}`
+            let output = ""
+            if (commander.withoutToc) {
+                output = `${templateOutput}`
+            } else {
+                output = `${toc(templateOutput).content}\n${templateOutput}`
+            }
             if (commander.output) {
                 fs.writeFileSync(commander.output, output)
             } else {
