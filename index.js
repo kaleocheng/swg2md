@@ -4,15 +4,10 @@ const SwaggerParser = require('swagger-parser')
 const Swagmock = require('swagmock')
 const Mustache = require('mustache')
 const fs = require('fs')
-const toc = require('markdown-toc')
-const path = require('path')
-const commander = require('commander')
-const pkg = require('./package.json')
 
 function getRequireBody(name, obj, result) {
     const nameset = new Set([])
     const ofKeys = ['oneOf', 'anyOf', 'allOf']
-
     for (let key of ofKeys) {
         if (key in obj) {
             for (let o of obj[key]) {
@@ -120,41 +115,13 @@ async function getItems(api) {
     return items
 }
 
-
-commander
-    .version(pkg.version)
-    .option('-t, --template <template>', 'The doc template')
-    .option('--without-toc', 'Without table of contents')
-    .option('-s, --swagger <swagger>', 'The swagger file')
-    .option('-o, --output [output]', 'The output file')
-    .parse(process.argv)
-
-if (!commander.swagger) {
-    console.log('need both and -s')
-    process.exit(0)
+async function render(templateFile, swaggerFile) {
+    const api = await SwaggerParser.validate(swaggerFile)
+    const items = await getItems(api)
+    const template = fs.readFileSync(templateFile, 'utf8')
+    return Mustache.render(template, items);
 }
 
-function main() {
-    SwaggerParser.validate(commander.swagger, async function(err, api) {
-        if (err) {
-            console.error(err)
-        } else {
-            const items = await getItems(api)
-            const template = fs.readFileSync(commander.template || path.join(__dirname, 'template.mustache'), 'utf8')
-            const templateOutput = Mustache.render(template, items);
-            let output = ""
-            if (commander.withoutToc) {
-                output = `${templateOutput}`
-            } else {
-                output = `${toc(templateOutput).content}\n${templateOutput}`
-            }
-            if (commander.output) {
-                fs.writeFileSync(commander.output, output)
-            } else {
-                console.log(output)
-            }
-        }
-    })
+module.exports = {
+    render: render
 }
-
-main()

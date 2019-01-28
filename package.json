@@ -24,6 +24,6 @@
         "swagmock": "git+https://github.com/kaleocheng/swagmock.git#adjust-to-wcl"
     },
     "bin": {
-        "swg2md": "./index.js"
+        "swg2md": "./bin/swg2md.js"
     }
 }
