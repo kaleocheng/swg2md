@@ -1,10 +1,12 @@
-{{#.}}
-# {{{title}}}
-## Description
+{{#flatPaths}}
+# {{methodUpperCase}} {{{path}}}
+## summary
+{{summary}}
+## description
 {{{description}}}
 
 ## Request
-### Request headers and query
+### Request parameters
 |Name|In|Description|Required|Type|
 |-|-|-|-|-|
 {{#parameters}}
@@ -15,51 +17,42 @@
 {{/parameters}}
 
 ### Request body
-{{#requestbody}}
+{{#flatedRequestBody}}
 |Name|Description|Type|
 |-|-|-|
-{{#.}}
+{{#flatedJSONSchema}}
 |{{name}}|{{description}}|{{type}}|
-{{/.}}
-{{^.}}
+{{/flatedJSONSchema}}
+{{^flatedJSONSchema}}
 |NA|NA|NA|
-{{/.}}
+{{/flatedJSONSchema}}
 
-{{/requestbody}}
+{{/flatedRequestBody}}
 
 ## Response
 ### Response code
 |Status Code|Description|
 |-|-|
-{{#responses}}
+{{#flatedResponses}}
 {{#.}}
 |{{code}}|{{description}}|
 {{/.}}
-{{/responses}}
+{{/flatedResponses}}
 
 ### Response body
-{{#responses}}
+{{#flatedResponses}}
 {{#.}}
 ***{{code}}***
-{{#responsebody}}
 |Name|Description|Type|
 |-|-|-|
-{{#.}}
+{{#responseBody}}
 |{{name}}|{{description}}|{{type}}|
-{{/.}}
-{{^.}}
+{{/responseBody}}
+{{^responseBody}}
 |NA|NA|NA|
-{{/.}}
-
-{{/responsebody}}
-
-{{#responseMock}}
-```json
-{{{.}}}
-```
-{{/responseMock}}
+{{/responseBody}}
 
 {{/.}}
-{{/responses}}
-{{/.}}
+{{/flatedResponses}}
+{{/flatPaths}}
 
