@@ -10,6 +10,11 @@ paths:
   /pets:
     get:
       summary: List all pets
+      description: |
+        sequence diagram
+        ```sequence
+        a -> b: test
+        ```
       operationId: listPets
       tags:
         - pets

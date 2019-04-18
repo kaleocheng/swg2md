@@ -64,7 +64,7 @@ async function getItems(api) {
             item.seq = `${m}${p.replace(/\//g, '-')}`
             item.path = p
             item.method = m
-            item.description = apiItem.summary
+            item.description = apiItem.description
             item.parameters = apiItem.parameters || []
             item.requestbody = apiItem.requestBody && apiItem.requestBody.content && apiItem.requestBody.content['application/json'] && apiItem.requestBody.content['application/json'].schema || []
             item.responses = []
