@@ -102,10 +102,11 @@ function transForMD(api) {
     return api
 }
 
-async function render(templateFile, swaggerFile) {
+async function render(swaggerFile, option) {
+    const tf = option && option.templateFile || require.resolve("./template.mustache")
     const api = await SwaggerParser.validate(swaggerFile)
     const items = await transForMD(api)
-    const template = fs.readFileSync(templateFile, 'utf8')
+    const template = fs.readFileSync(tf, 'utf8')
     return Mustache.render(template, items);
 }
 

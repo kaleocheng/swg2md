@@ -20,9 +20,8 @@ async function main() {
         process.exit(0)
     }
 
-    const templateFile = commander.template || require.resolve("../template.mustache")
     const swaggerFile = commander.swagger
-    const templateOutput = await swg2md.render(templateFile, swaggerFile)
+    const templateOutput = await swg2md.render(swaggerFile, { templateFile: commander.template })
     let output = ''
     if (commander.withoutToc) {
         output = `${templateOutput}`
